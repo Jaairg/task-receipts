@@ -1,0 +1,11 @@
+p {
+  font-size:50px;
+  text-align: center;
+}
+
+.border_text {
+  border-style: solid;
+  width: 576px;
+  height: 420px;
+}
+
