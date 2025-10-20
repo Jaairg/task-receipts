@@ -1,11 +1,20 @@
 p {
-  font-size:50px;
+  font-size: 50px;
   text-align: center;
 }
 
-.border_text {
-  border-style: solid;
-  width: 576px;
-  height: 420px;
+label {
+  font-size: 40px;
+  text-align: center;
 }
 
+p1 {
+  font-size: 35px;
+}
+
+.border_text {
+  box-sizing: border-box;
+  border-style: solid;
+  width: 566px;
+  height: 760px;
+}

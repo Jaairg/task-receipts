@@ -1,16 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <head>
   <title>Printing station</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 
 <body>
-  <div class="border_text">
-    <p> Hello world </p>
-    <p1> ----------------------------------------------- </p1>
-  </div>
   <form method="POST">
-    <input type="hidden" name="job_id" value="{{ job_id }}" />
-    <button type="submit">PRINT</button /form>
+  <div class="border_text">
+    {% if has_task %}
+      <p> Task: {{ task_name }} </p>
+    {% else %}
+      <p> Task: <input name="task_name" type="text"/> </p>
+    {% endif %}
+    <p1> ------------------------------------------------ </p1>
+      {% if has_date %} 
+      <p> Date: {{date}}  </p>
+      {% else %}
+      <p> Date: <input name="selected_date" type="date"/> </p>
+      {% endif %}
+
+      {% if has_priority %}
+      <p> Priority: {{ priority }} </p>
+      {% else %}
+      <p> Priority: <select name="priority" id="prior">
+        <option value="low"> Low </option>
+        <option value="medium"> Medium </option>
+        <option value="high"> High </option>
+      </select>
+      {% endif %}
+    <p>To do: Solve problems from chapter 7</p>
+  </div>
+    <input type="hidden" name="submit_button" />
+    <button type="submit"> SUBMIT </buton>
+  </form>
+  <form method="POST">
+    <input type="hidden" name="print_receipt"/>
+    <button type="submit">PRINT</button>
+  </form>
 </body>
