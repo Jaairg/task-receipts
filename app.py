@@ -32,8 +32,8 @@ def run(playwright: Playwright):
     browser.close()
 
 
-@app.route("/print_receipt/<id>", methods=["GET", "POST"])
-def print(id):
+@app.route("/create_receipt/<id>", methods=["GET", "POST"])
+def create_receipt(id):
     if request.method == "POST":
         if "submit_button" in request.form:
             date_str = None
@@ -65,16 +65,19 @@ def print(id):
                 has_priority=has_priority,
             )
 
-        if "print_receipt" in request.form:
-            with sync_playwright() as playwright:
-                run(playwright)
-            image = None
+        return render_template("index.html")
 
-            with Image.open("debug.png") as im:
-                image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
+@app.route("/print_receipt/<id>"), methods["GET", "POST"])
+def print_receipt(id):
+    if "print_receipt" in request.form:
+        with sync_playwright() as playwright:
+            run(playwright)
+        image = None
 
-            p = Usb(0x0FE6, 0x811E)
-            p.image(image)
-            p.cut()
-            return render_template("index.html")
-    return render_template("index.html")
+        with Image.open("debug.png") as im:       
+        image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
+        
+        p = Usb(0x0FE6, 0x811E)
+        p.image(image)
+        p.cut()
+    return
