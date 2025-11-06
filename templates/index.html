@@ -19,7 +19,6 @@
       {% else %}
       <p> Date: <input name="selected_date" type="date"/> </p>
       {% endif %}
-
       {% if has_priority %}
       <p> Priority: {{ priority }} </p>
       {% else %}
@@ -31,11 +30,17 @@
       {% endif %}
     <p>To do: Solve problems from chapter 7</p>
   </div>
+  {% if show_save_button %}
     <input type="hidden" name="submit_button" />
-    <button type="submit"> SUBMIT </buton>
+    <button type="submit"> SAVE </buton>
   </form>
+  {% endif %}
+
+  {% if ready_to_print %}
   <form method="POST">
     <input type="hidden" name="print_receipt"/>
     <button type="submit">PRINT</button>
   </form>
+  {% endif %}
+
 </body>

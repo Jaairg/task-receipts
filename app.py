@@ -7,19 +7,31 @@ from PIL import Image
 from playwright.sync_api import Playwright, sync_playwright
 
 app = Flask(__name__)
+
 app.secret_key = "282801837c6b9242db2897a776f02807f4de186fd133801114fbe137435ab604"
-path = Path("templates/index.html").resolve()
-url = path.as_uri()
+
 css_path = Path("static/style.css").resolve()
 
 
 def run(playwright: Playwright):
     # set the browser to use:
     chromium = playwright.chromium
-    # returns the browser instance
-    browser = chromium.launch(headless=False)
+    browser = chromium.launch(headless=False) # returns the browser instance
+    cookie_header = request.cookies.get("session")
+
+    context = browser.new_context()
+    context.add_cookies([
+        {
+            'name': 'session',
+            'value': cookie_header,
+            'domain': '127.0.0.1',
+            'path': '/',
+            'httpOnly': True,
+            'sameSite': 'Lax'
+        }
+    ])
     # creates the new page
-    page = browser.new_page()
+    page = context.new_page()
     page.set_viewport_size({"width": 600, "height": 800})
     # returns the main source response
     # @param url to navigate page to
@@ -27,18 +39,12 @@ def run(playwright: Playwright):
     page.add_style_tag(path=css_path)
     # Pauses script execution
     page.pause()
+    page.wait_for_load_state("networkidle")
     page.screenshot(path="debug.png", full_page=True)
+
+    context.close()
     # Close browser
     browser.close()
-
-
-date_str = None
-has_date = None
-has_task = None
-task_name = None
-has_priority = None
-priority_level = None
-
 
 @app.route("/create_receipt", methods=["GET", "POST"])
 def create_receipt():
@@ -56,20 +62,9 @@ def create_receipt():
             if "priority" in request.form:
                 session["priority_level"] = request.form.get("priority")
                 session["has_priority"] = True
-            return render_template(
-                "index.html",
-                date=session.get("date_str"),
-                has_date=session.get("has_date"),
-                task_name=session.get("task_name"),
-                has_task=session.get("has_task"),
-                priority=session.get("priority_level"),
-                has_priority=session.get("has_priority"),
-            )
-
-        if "print_receipt" in request.form:
-            return redirect("/print_receipt")
-        return render_template("index.html")
-    return render_template("index.html")
+            
+            return redirect(url_for("print_receipt"))
+    return render_template("index.html", show_save_button=True)
 
 
 @app.route("/print_receipt", methods=["GET", "POST"])
@@ -94,4 +89,5 @@ def print_receipt():
         has_task=session.get("has_task"),
         priority=session.get("priority_level"),
         has_priority=session.get("has_priority"),
+        ready_to_print=True,
     )
