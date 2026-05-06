@@ -1,5 +1,5 @@
-<!doctype html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <title>Printing station</title>
   <link rel="stylesheet" href="/static/style.css" />
@@ -8,33 +8,50 @@
 <body>
   <form method="POST">
   <div class="border_text">
+
     {% if has_task %}
-      <p> Task: {{ task_name }} </p>
+    <p> 
+      <span class="label"> Task:</span>
+      <span class="value"> {{ task_name }} </span>
+    </p>
     {% else %}
-      <p> Task: <input name="task_name" type="text"/> </p>
+    <p> <span class="label"> Task:</span> <input name="task_name" type="text"/> </p>
     {% endif %}
-    <p1> ------------------------------------------------ </p1>
+
+    <hr>
+
       {% if has_date %} 
-      <p> Date: {{date}}  </p>
+      <p> 
+        <span class="label"> Date:</span> 
+        <span class="value"> {{date}}</span>
+      </p>
       {% else %}
-      <p> Date: <input name="selected_date" type="date"/> </p>
+      <p> <span class="label"> Date:</span> <input name="selected_date" type="date"/> </p>
       {% endif %}
+
       {% if has_priority %}
-      <p> Priority: {{ priority }} </p>
+      <p> 
+        <span class="label"> Priority:</span> 
+        <span class="value"> {{ priority }}</span>
+      </p>
       {% else %}
-      <p> Priority: <select name="priority" id="prior">
+      <p> <span class="label"> Priority:</span> <select name="priority" id="prior">
         <option value="low"> Low </option>
         <option value="medium"> Medium </option>
         <option value="high"> High </option>
       </select>
       {% endif %}
-    <p>To do: Solve problems from chapter 7</p>
+      
+      <p>
+        <span class="label"> To Do:</span>
+        <span class="value"> Write second paragraph and brainstorm possible additions.</span>
+      </p>
   </div>
   {% if show_save_button %}
     <input type="hidden" name="submit_button" />
-    <button type="submit"> SAVE </buton>
-  </form>
+    <button type="submit"> SAVE </button>
   {% endif %}
+  </form>
 
   {% if ready_to_print %}
   <form method="POST">
@@ -44,3 +61,4 @@
   {% endif %}
 
 </body>
+</html>

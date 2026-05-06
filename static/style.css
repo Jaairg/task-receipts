@@ -1,15 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
+
 p {
-  font-size: 50px;
+  font-family: 'Inconsolata', monospace;
   text-align: center;
 }
 
-label {
-  font-size: 40px;
-  text-align: center;
+.label {
+  font-size: 38px;
+  font-weight: 700;
 }
 
-p1 {
-  font-size: 35px;
+.value {
+  font-size: 28px;
+  font-weight: 400;
+  margin-left: 8px;
 }
 
 .border_text {
