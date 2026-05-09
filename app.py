@@ -70,6 +70,12 @@ def create_receipt():
 @app.route("/print_receipt", methods=["GET", "POST"])
 def print_receipt():
     if "print_receipt" in request.form:
+        
+        missing_fields = get_session_missing_fields()
+
+        if missing_fields:
+            return redirect(url_for("create_receipt"))
+
         with sync_playwright() as playwright:
             run(playwright)
         image = None
