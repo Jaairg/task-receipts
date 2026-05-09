@@ -91,3 +91,15 @@ def print_receipt():
         has_priority=session.get("has_priority"),
         ready_to_print=True,
     )
+
+def get_session_missing_fields():
+    missing_fields = []
+    
+    if not session.get("task_name"):
+        missing_fields.append("task_name")
+    if not session.get("date_str"):
+        missing_fields.append("date_str")
+    if not session.get("priority_level"):
+        missing_fields.append("priority_level")
+
+    return missing_fields  
