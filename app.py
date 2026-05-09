@@ -69,34 +69,28 @@ def create_receipt():
 
 @app.route("/print_receipt", methods=["GET", "POST"])
 def print_receipt():
-    if "print_receipt" in request.form:
-        
-        missing_fields = get_session_missing_fields()
 
-        if missing_fields:
-            return redirect(url_for("create_receipt"))
+    is_print_submission = request.method == "POST" and "print_receipt" in request.form
+    if not is_print_submission:
+        return render_receipt_page()
 
-        with sync_playwright() as playwright:
-            run(playwright)
-        image = None
+    missing_fields = get_session_missing_fields()
 
-        with Image.open("debug.png") as im:
-            image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
+    if missing_fields:
+        return redirect(url_for("create_receipt"))
 
-        p = Usb(0x0FE6, 0x811E)
-        p.image(image)
-        p.cut()
+    with sync_playwright() as playwright:
+        run(playwright)
+    image = None
 
-    return render_template(
-        "index.html",
-        date=session.get("date_str"),
-        has_date=session.get("has_date"),
-        task_name=session.get("task_name"),
-        has_task=session.get("has_task"),
-        priority=session.get("priority_level"),
-        has_priority=session.get("has_priority"),
-        ready_to_print=True,
-    )
+    with Image.open("debug.png") as im:
+        image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
+
+    p = Usb(0x0FE6, 0x811E)
+    p.image(image)
+    p.cut()
+
+    return render_receipt_page()
 
 def get_session_missing_fields():
     missing_fields = []
@@ -109,3 +103,16 @@ def get_session_missing_fields():
         missing_fields.append("priority_level")
 
     return missing_fields  
+
+def render_receipt_page():
+    return render_template(
+        "index.html",
+        date=session.get("date_str"),
+        has_date=session.get("has_date"),
+        task_name=session.get("task_name"),
+        has_task=session.get("has_task"),
+        priority=session.get("priority_level"),
+        has_priority=session.get("has_priority"),
+        ready_to_print=True,
+    )
+
