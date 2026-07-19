@@ -12,7 +12,6 @@ app.secret_key = "282801837c6b9242db2897a776f02807f4de186fd133801114fbe137435ab6
 
 css_path = Path("static/style.css").resolve()
 
-
 def run(playwright: Playwright):
     # set the browser to use:
     chromium = playwright.chromium
@@ -79,12 +78,7 @@ def print_receipt():
     if missing_fields:
         return redirect(url_for("create_receipt"))
 
-    with sync_playwright() as playwright:
-        run(playwright)
-    image = None
-
-    with Image.open("debug.png") as im:
-        image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
+    image = generate_receipt_image()
 
     p = Usb(0x0FE6, 0x811E)
     p.image(image)
@@ -116,3 +110,12 @@ def render_receipt_page():
         ready_to_print=True,
     )
 
+def generate_receipt_image():
+    with sync_playwright() as playwright:
+        run(playwright)
+    image = None
+
+    with Image.open("debug.png") as im:
+        image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
+
+    return image
