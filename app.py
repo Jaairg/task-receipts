@@ -79,10 +79,8 @@ def print_receipt():
         return redirect(url_for("create_receipt"))
 
     image = generate_receipt_image()
-
-    p = Usb(0x0FE6, 0x811E)
-    p.image(image)
-    p.cut()
+        
+    send_to_printer(image)
 
     return render_receipt_page()
 
@@ -119,3 +117,9 @@ def generate_receipt_image():
         image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
 
     return image
+
+def send_to_printer(image):
+    p = Usb(0x0FE6, 0x811E)
+    p.image(image)
+    p.cut()
+    p.close()
