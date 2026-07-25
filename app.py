@@ -2,7 +2,9 @@ from datetime import datetime
 from pathlib import Path
 
 from escpos.printer import Usb
-from flask import Flask, redirect, render_template, request, session, url_for
+import usb.core
+from escpos.exceptions import USBNotFoundError
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from PIL import Image
 from playwright.sync_api import Playwright, sync_playwright
 
@@ -79,8 +81,19 @@ def print_receipt():
         return redirect(url_for("create_receipt"))
 
     image = generate_receipt_image()
-        
-    send_to_printer(image)
+    
+    try:
+        send_to_printer(image)
+    except USBNotFoundError:
+        app.logger.exception("Printer not found")
+        flash("Printer not found: check that it's on and connected")
+    except usb.core.USBError as e:
+        if e.errno == 16:
+            app.logger.exception("Resource busy")
+            flash("Printer error: try printing one receipt at a time")
+        elif e.errno == 19:
+            app.logger.exception("Device disconnected")
+            flash("Printer connection error: device may have been disconnected")
 
     return render_receipt_page()
 
@@ -119,7 +132,10 @@ def generate_receipt_image():
     return image
 
 def send_to_printer(image):
-    p = Usb(0x0FE6, 0x811E)
-    p.image(image)
-    p.cut()
-    p.close()
+    printer = Usb(0x0FE6, 0x811E)
+
+    try:
+        printer.image(image)
+        printer.cut()
+    finally:
+        printer.close()
