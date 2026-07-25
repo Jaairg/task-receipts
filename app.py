@@ -119,7 +119,10 @@ def generate_receipt_image():
     return image
 
 def send_to_printer(image):
-    p = Usb(0x0FE6, 0x811E)
-    p.image(image)
-    p.cut()
-    p.close()
+    printer = Usb(0x0FE6, 0x811E)
+
+    try:
+        printer.image(image)
+        printer.cut()
+    finally:
+        printer.close()
