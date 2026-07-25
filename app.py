@@ -17,7 +17,7 @@ css_path = Path("static/style.css").resolve()
 def run(playwright: Playwright):
     # set the browser to use:
     chromium = playwright.chromium
-    browser = chromium.launch(headless=False) # returns the browser instance
+    browser = chromium.launch() # returns the browser instance
     cookie_header = request.cookies.get("session")
 
     context = browser.new_context()
@@ -38,9 +38,7 @@ def run(playwright: Playwright):
     # @param url to navigate page to
     page.goto(url_for("print_receipt", _external=True))
     page.add_style_tag(path=css_path)
-    # Pauses script execution
-    page.pause()
-    page.wait_for_load_state("networkidle")
+
     page.screenshot(path="debug.png", full_page=True)
 
     context.close()
