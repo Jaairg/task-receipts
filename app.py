@@ -124,7 +124,7 @@ def render_receipt_page():
 
 def generate_receipt_image():
     with sync_playwright() as playwright:
-        screenshot_bytes = io.BytesIO(run(playwright))
+        screenshot_bytes = run(playwright)
 
     image_stream = io.BytesIO(screenshot_bytes)
 
