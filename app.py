@@ -1,8 +1,9 @@
 from datetime import datetime
 from pathlib import Path
 
-from escpos.printer import Usb
+import io
 import usb.core
+from escpos.printer import Usb
 from escpos.exceptions import USBNotFoundError
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from PIL import Image
@@ -39,11 +40,13 @@ def run(playwright: Playwright):
     page.goto(url_for("print_receipt", _external=True))
     page.add_style_tag(path=css_path)
 
-    page.screenshot(path="debug.png", full_page=True)
+    screenshot_bytes = page.screenshot()
 
     context.close()
     # Close browser
     browser.close()
+
+    return screenshot_bytes
 
 @app.route("/create_receipt", methods=["GET", "POST"])
 def create_receipt():
@@ -121,10 +124,11 @@ def render_receipt_page():
 
 def generate_receipt_image():
     with sync_playwright() as playwright:
-        run(playwright)
-    image = None
+        screenshot_bytes = io.BytesIO(run(playwright))
 
-    with Image.open("debug.png") as im:
+    image_stream = io.BytesIO(screenshot_bytes)
+
+    with Image.open(image_stream) as im:
         image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
 
     return image
