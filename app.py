@@ -15,23 +15,26 @@ app.secret_key = "282801837c6b9242db2897a776f02807f4de186fd133801114fbe137435ab6
 
 css_path = Path("static/style.css").resolve()
 
+
 def run(playwright: Playwright):
     # set the browser to use:
     chromium = playwright.chromium
-    browser = chromium.launch() # returns the browser instance
+    browser = chromium.launch()  # returns the browser instance
     cookie_header = request.cookies.get("session")
 
     context = browser.new_context()
-    context.add_cookies([
-        {
-            'name': 'session',
-            'value': cookie_header,
-            'domain': '127.0.0.1',
-            'path': '/',
-            'httpOnly': True,
-            'sameSite': 'Lax'
-        }
-    ])
+    context.add_cookies(
+        [
+            {
+                "name": "session",
+                "value": cookie_header,
+                "domain": "127.0.0.1",
+                "path": "/",
+                "httpOnly": True,
+                "sameSite": "Lax",
+            }
+        ]
+    )
     # creates the new page
     page = context.new_page()
     page.set_viewport_size({"width": 600, "height": 800})
@@ -48,6 +51,7 @@ def run(playwright: Playwright):
 
     return screenshot_bytes
 
+
 @app.route("/create_receipt", methods=["GET", "POST"])
 def create_receipt():
 
@@ -55,10 +59,14 @@ def create_receipt():
     if not is_save_submission:
         return render_template("index.html", show_save_button=True)
 
-    required_fields = [("task_name", "Task name"), ("deadline_date", "Deadline date"), ("priority_level", "Priority level")]
+    required_fields = [
+        ("task_name", "Task name"),
+        ("deadline_date", "Deadline date"),
+        ("priority_level", "Priority level"),
+    ]
 
     has_missing_field = False
-    
+
     for field, label in required_fields:
         if not request.form.get(field, "").strip():
             has_missing_field = True
@@ -71,15 +79,18 @@ def create_receipt():
 
     return render_template("index.html", show_save_button=True)
 
+
 @app.route("/print_receipt", methods=["GET", "POST"])
 def print_receipt():
 
-    is_print_submission = request.method == "POST" and "print_receipt_button" in request.form
+    is_print_submission = (
+        request.method == "POST" and "print_receipt_button" in request.form
+    )
     if not is_print_submission:
         return render_receipt_page()
 
     image = generate_receipt_image()
-    
+
     try:
         send_to_printer(image)
     except USBNotFoundError:
@@ -95,6 +106,7 @@ def print_receipt():
 
     return render_receipt_page()
 
+
 def render_receipt_page():
     return render_template(
         "index.html",
@@ -103,6 +115,7 @@ def render_receipt_page():
         priority_level=session.get("priority_level"),
         ready_to_print=True,
     )
+
 
 def generate_receipt_image():
     with sync_playwright() as playwright:
@@ -114,6 +127,7 @@ def generate_receipt_image():
         image = im.convert(mode="1", dither=Image.FLOYDSTEINBERG)
 
     return image
+
 
 def send_to_printer(image):
     printer = Usb(0x0FE6, 0x811E)
