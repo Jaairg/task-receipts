@@ -50,36 +50,33 @@ def run(playwright: Playwright):
 
 @app.route("/create_receipt", methods=["GET", "POST"])
 def create_receipt():
-    if request.method == "POST":
-        if "submit_button" in request.form:
 
-            if "task_name" in request.form:
-                session["task_name"] = request.form.get("task_name")
-                session["has_task"] = True
+    is_save_submission = request.method == "POST" and "save_button" in request.form
+    if not is_save_submission:
+        return render_template("index.html", show_save_button=True)
 
-            if "selected_date" in request.form:
-                session["date_str"] = request.form.get("selected_date")
-                session["has_date"] = True
+    required_fields = [("task_name", "Task name"), ("deadline_date", "Deadline date"), ("priority_level", "Priority level")]
 
-            if "priority" in request.form:
-                session["priority_level"] = request.form.get("priority")
-                session["has_priority"] = True
-            
-            return redirect(url_for("print_receipt"))
+    has_missing_field = False
+    
+    for field, label in required_fields:
+        if not request.form.get(field, "").strip():
+            has_missing_field = True
+            flash(f"Missing required field: {label}")
+        else:
+            session[field] = request.form.get(field)
+
+    if not has_missing_field:
+        return redirect(url_for("print_receipt"))
+
     return render_template("index.html", show_save_button=True)
-
 
 @app.route("/print_receipt", methods=["GET", "POST"])
 def print_receipt():
 
-    is_print_submission = request.method == "POST" and "print_receipt" in request.form
+    is_print_submission = request.method == "POST" and "print_receipt_button" in request.form
     if not is_print_submission:
         return render_receipt_page()
-
-    missing_fields = get_session_missing_fields()
-
-    if missing_fields:
-        return redirect(url_for("create_receipt"))
 
     image = generate_receipt_image()
     
@@ -98,27 +95,12 @@ def print_receipt():
 
     return render_receipt_page()
 
-def get_session_missing_fields():
-    missing_fields = []
-    
-    if not session.get("task_name"):
-        missing_fields.append("task_name")
-    if not session.get("date_str"):
-        missing_fields.append("date_str")
-    if not session.get("priority_level"):
-        missing_fields.append("priority_level")
-
-    return missing_fields  
-
 def render_receipt_page():
     return render_template(
         "index.html",
-        date=session.get("date_str"),
-        has_date=session.get("has_date"),
         task_name=session.get("task_name"),
-        has_task=session.get("has_task"),
-        priority=session.get("priority_level"),
-        has_priority=session.get("has_priority"),
+        deadline_date=session.get("deadline_date"),
+        priority_level=session.get("priority_level"),
         ready_to_print=True,
     )
 
