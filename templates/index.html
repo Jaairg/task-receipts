@@ -19,7 +19,7 @@
   <form method="POST">
   <div class="border_text">
 
-    {% if has_task %}
+    {% if task_name %}
     <p> 
       <span class="label"> Task:</span>
       <span class="value"> {{ task_name }} </span>
@@ -30,22 +30,22 @@
 
     <hr>
 
-      {% if has_date %} 
+      {% if deadline_date %} 
       <p> 
         <span class="label"> Date:</span> 
-        <span class="value"> {{date}}</span>
+        <span class="value"> {{deadline_date}}</span>
       </p>
       {% else %}
-      <p> <span class="label"> Date:</span> <input name="selected_date" type="date"/> </p>
+      <p> <span class="label"> Date:</span> <input name="deadline_date" type="date"/> </p>
       {% endif %}
 
-      {% if has_priority %}
+      {% if priority_level%}
       <p> 
         <span class="label"> Priority:</span> 
-        <span class="value"> {{ priority }}</span>
+        <span class="value"> {{ priority_level }}</span>
       </p>
       {% else %}
-      <p> <span class="label"> Priority:</span> <select name="priority" id="prior">
+      <p> <span class="label"> Priority:</span> <select name="priority_level" id="priority">
         <option value="low"> Low </option>
         <option value="medium"> Medium </option>
         <option value="high"> High </option>
@@ -58,14 +58,14 @@
       </p>
   </div>
   {% if show_save_button %}
-    <input type="hidden" name="submit_button" />
+    <input type="hidden" name="save_button" />
     <button type="submit"> SAVE </button>
   {% endif %}
   </form>
 
   {% if ready_to_print %}
   <form method="POST">
-    <input type="hidden" name="print_receipt"/>
+    <input type="hidden" name="print_receipt_button"/>
     <button type="submit">PRINT</button>
   </form>
   {% endif %}

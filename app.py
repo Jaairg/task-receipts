@@ -51,19 +51,16 @@ def run(playwright: Playwright):
 @app.route("/create_receipt", methods=["GET", "POST"])
 def create_receipt():
     if request.method == "POST":
-        if "submit_button" in request.form:
+        if "save_button" in request.form:
 
             if "task_name" in request.form:
                 session["task_name"] = request.form.get("task_name")
-                session["has_task"] = True
 
-            if "selected_date" in request.form:
-                session["date_str"] = request.form.get("selected_date")
-                session["has_date"] = True
+            if "deadline_date" in request.form:
+                session["deadline_date"] = request.form.get("deadline_date")
 
-            if "priority" in request.form:
-                session["priority_level"] = request.form.get("priority")
-                session["has_priority"] = True
+            if "priority_level" in request.form:
+                session["priority_level"] = request.form.get("priority_level")
             
             return redirect(url_for("print_receipt"))
     return render_template("index.html", show_save_button=True)
@@ -72,7 +69,7 @@ def create_receipt():
 @app.route("/print_receipt", methods=["GET", "POST"])
 def print_receipt():
 
-    is_print_submission = request.method == "POST" and "print_receipt" in request.form
+    is_print_submission = request.method == "POST" and "print_receipt_button" in request.form
     if not is_print_submission:
         return render_receipt_page()
 
@@ -103,8 +100,8 @@ def get_session_missing_fields():
     
     if not session.get("task_name"):
         missing_fields.append("task_name")
-    if not session.get("date_str"):
-        missing_fields.append("date_str")
+    if not session.get("deadline_date"):
+        missing_fields.append("deadline_date")
     if not session.get("priority_level"):
         missing_fields.append("priority_level")
 
@@ -113,12 +110,9 @@ def get_session_missing_fields():
 def render_receipt_page():
     return render_template(
         "index.html",
-        date=session.get("date_str"),
-        has_date=session.get("has_date"),
         task_name=session.get("task_name"),
-        has_task=session.get("has_task"),
-        priority=session.get("priority_level"),
-        has_priority=session.get("has_priority"),
+        deadline_date=session.get("deadline_date"),
+        priority_level=session.get("priority_level"),
         ready_to_print=True,
     )
 
