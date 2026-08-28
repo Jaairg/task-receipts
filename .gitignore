@@ -2,8 +2,11 @@
 __pycache__/
 
 # environments
-venv/
+.venv/
 
 # personal todo list
 TODO.md
 target_structure.md
+
+# formatter cache
+.ruff_cache
