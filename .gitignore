@@ -10,3 +10,5 @@ target_structure.md
 
 # formatter cache
 .ruff_cache
+
+instance/
