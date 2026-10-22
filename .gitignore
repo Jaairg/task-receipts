@@ -12,3 +12,5 @@ target_structure.md
 .ruff_cache
 
 instance/
+
+.env

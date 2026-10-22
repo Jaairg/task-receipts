@@ -1,17 +1,20 @@
-from datetime import datetime
+import io
+import os
 from pathlib import Path
 
-import io
 import usb.core
-from escpos.printer import Usb
+from dotenv import load_dotenv
 from escpos.exceptions import USBNotFoundError
+from escpos.printer import Usb
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from PIL import Image
 from playwright.sync_api import Playwright, sync_playwright
 
+load_dotenv()
+
 app = Flask(__name__)
 
-app.secret_key = "282801837c6b9242db2897a776f02807f4de186fd133801114fbe137435ab604"
+app.secret_key = os.environ["SECRET_KEY"]
 
 css_path = Path("static/style.css").resolve()
 
